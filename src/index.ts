@@ -15,12 +15,17 @@ type Settings = {
   preferredMicDeviceId: string | null;
 };
 
+type SettingsStore = {
+  get: <Key extends keyof Settings>(key: Key) => Settings[Key];
+  set: (value: Partial<Settings>) => void;
+};
+
 const store = new Store<Settings>({
   defaults: {
     language: 'de',
     preferredMicDeviceId: null,
   },
-});
+}) as unknown as SettingsStore;
 
 const getSettings = (): Settings => ({
   language: store.get('language'),
@@ -70,7 +75,7 @@ const ensureReplicateClient = async () => {
 
   if (!replicateClient) {
     const mod = await import('replicate');
-    replicateClient = new mod.default({ auth: token }) as ReplicateClient;
+    replicateClient = new mod.default({ auth: token }) as unknown as ReplicateClient;
   }
   return replicateClient;
 };

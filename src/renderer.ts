@@ -32,6 +32,22 @@ let isRecording = false;
 let isTranscribing = false;
 let settings: Settings = { language: 'de', preferredMicDeviceId: null };
 
+const primeMicrophoneAccess = async () => {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach((track) => track.stop());
+  } catch (error) {
+    handleError(
+      error instanceof Error
+        ? error
+        : new Error('Mikrofonberechtigung fehlgeschlagen.'),
+    );
+  }
+};
+
 const setStatus = (text: string, isError = false) => {
   statusLine.textContent = text;
   statusLine.dataset.state = isError ? 'error' : 'normal';
@@ -236,6 +252,7 @@ const init = async () => {
     languageSelect.value = settings.language;
     updateRecordButton();
     setStatus('Idle');
+    await primeMicrophoneAccess();
     await refreshDevices();
   } catch (error) {
     handleError(error);
