@@ -113,6 +113,7 @@ const setStatus = (text: string, isError = false) => {
 const updateRecordButton = () => {
   recordButton.textContent = isRecording ? 'Stop' : 'Aufnehmen';
   recordButton.disabled = isTranscribing;
+  recordButton.dataset.recording = isRecording ? 'true' : 'false';
 };
 
 const getPreferredMimeType = (): string | undefined => {
@@ -286,8 +287,10 @@ copyButton.addEventListener('click', () => {
   void window.micscribe.copyText(text);
   const original = copyButton.textContent;
   copyButton.textContent = 'Copied';
+  copyButton.dataset.copied = 'true';
   setTimeout(() => {
     copyButton.textContent = original || 'Copy';
+    copyButton.dataset.copied = 'false';
   }, 1200);
 });
 
