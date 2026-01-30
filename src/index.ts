@@ -139,6 +139,16 @@ if (require('electron-squirrel-startup')) {
 
 app.setAppUserModelId('com.micscribe.app');
 
+const getWindowIcon = (): string | undefined => {
+  const devIcon = path.resolve(process.cwd(), 'assets', 'icon.ico');
+  if (!app.isPackaged) {
+    return devIcon;
+  }
+
+  const packagedIcon = path.join(process.resourcesPath, 'assets', 'icon.ico');
+  return packagedIcon;
+};
+
 const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     height: 700,
@@ -146,6 +156,7 @@ const createWindow = (): void => {
     minHeight: 560,
     minWidth: 720,
     backgroundColor: '#ffffff',
+    icon: getWindowIcon(),
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       contextIsolation: true,

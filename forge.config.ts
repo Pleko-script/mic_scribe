@@ -14,6 +14,7 @@ const config: ForgeConfig = {
     asar: true,
     icon: path.resolve(__dirname, 'assets', 'icon'),
     executableName: 'MicScribe',
+    extraResource: [path.resolve(__dirname, 'assets', 'icon.ico')],
   },
   rebuildConfig: {},
   makers: [
