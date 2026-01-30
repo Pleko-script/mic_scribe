@@ -11,7 +11,21 @@ npm install
 
 ## Environment variable
 
-Set your Replicate token before running the app.
+Use a local `.env` file for development. The file is ignored by Git and will
+not be pushed. Copy the template once and fill in your token:
+
+```bash
+copy .env.example .env
+```
+
+Then edit `.env` and set your Replicate token:
+
+```
+REPLICATE_API_TOKEN=your-token
+```
+
+If you build/install the app, prefer setting the environment variable at the
+system/user level instead of shipping a `.env` file.
 
 PowerShell (current session):
 
