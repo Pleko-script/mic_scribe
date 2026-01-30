@@ -10,9 +10,20 @@
     <title>MicScribe</title>
   </head>
   <body>
+    <!-- Fixed Buttons -->
+    <button
+      id="settings-button"
+      class="floating-button settings-button"
+      type="button"
+      aria-label="Einstellungen"
+      title="Einstellungen"
+    >
+      <span class="icon">⚙️</span>
+    </button>
+
     <button
       id="theme-toggle"
-      class="theme-toggle"
+      class="floating-button theme-toggle"
       type="button"
       aria-label="Theme umschalten"
       title="Theme umschalten (hell/dunkel)"
@@ -20,57 +31,83 @@
       <span class="theme-toggle-icon" id="theme-icon">🌙</span>
     </button>
 
-    <main class="app">
-      <header class="toolbar">
-        <div class="field">
-          <label for="language">Sprache</label>
-          <select id="language">
-            <option value="de">Deutsch</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="microphone">Mikrofon</label>
-          <select id="microphone"></select>
-        </div>
-      </header>
-
-      <section class="api-card">
-        <div class="api-header">
-          <div>
-            <h3>Replicate API-Key</h3>
-            <p>Der Key wird lokal gespeichert und danach nicht mehr angezeigt.</p>
-          </div>
-          <span id="token-status" class="badge">Nicht gesetzt</span>
-        </div>
-        <div class="api-actions">
-          <input
-            id="api-token"
-            type="password"
-            placeholder="r8_..."
-            autocomplete="off"
-          />
-          <button id="save-token" class="primary">Speichern</button>
-          <button id="clear-token" class="ghost">Entfernen</button>
-        </div>
-      </section>
-
-      <section class="controls">
-        <button id="record-button" class="record">Aufnehmen</button>
-        <p id="status-line" class="status">Idle</p>
-      </section>
-
-      <section class="result">
-        <div class="result-header">
-          <h2>Transkript</h2>
-          <button id="copy-button" class="copy">Copy</button>
-        </div>
-        <textarea
-          id="transcript"
-          readonly
-          placeholder="Hier erscheint das Transkript..."
-        ></textarea>
-      </section>
+    <!-- Main Screen - Centered Recording -->
+    <main class="main-screen">
+      <div class="record-container">
+        <button id="record-button" class="record-button">
+          <span class="record-icon">🎙️</span>
+          <span class="record-text">Aufnehmen</span>
+        </button>
+        <p id="status-line" class="status">Bereit zum Aufnehmen</p>
+      </div>
     </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Einstellungen</h2>
+          <button class="modal-close" aria-label="Schließen">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="setting-group">
+            <label for="language">Sprache</label>
+            <select id="language">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label for="microphone">Mikrofon</label>
+            <select id="microphone"></select>
+          </div>
+
+          <div class="setting-group">
+            <label>Replicate API-Key</label>
+            <div class="api-status">
+              <span id="token-status" class="badge">Nicht gesetzt</span>
+            </div>
+            <p class="setting-hint">Der Key wird lokal gespeichert und danach nicht mehr angezeigt.</p>
+            <div class="api-actions">
+              <input
+                id="api-token"
+                type="password"
+                placeholder="r8_..."
+                autocomplete="off"
+              />
+              <button id="save-token" class="btn-primary">Speichern</button>
+              <button id="clear-token" class="btn-ghost">Entfernen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content result-modal-content">
+        <div class="modal-header">
+          <h2>Transkript</h2>
+          <button class="modal-close" aria-label="Schließen">×</button>
+        </div>
+
+        <div class="modal-body">
+          <textarea
+            id="transcript"
+            readonly
+            placeholder="Hier erscheint das Transkript..."
+          ></textarea>
+
+          <button id="copy-button" class="btn-copy">
+            <span class="copy-icon">📋</span>
+            <span class="copy-text">Text kopieren</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

@@ -10,6 +10,7 @@ type Settings = {
   theme?: Theme;
 };
 
+// DOM Elements
 const recordButton = document.querySelector<HTMLButtonElement>('#record-button');
 const statusLine = document.querySelector<HTMLParagraphElement>('#status-line');
 const transcriptArea = document.querySelector<HTMLTextAreaElement>('#transcript');
@@ -18,11 +19,15 @@ const languageSelect = document.querySelector<HTMLSelectElement>('#language');
 const micSelect = document.querySelector<HTMLSelectElement>('#microphone');
 const apiTokenInput = document.querySelector<HTMLInputElement>('#api-token');
 const saveTokenButton = document.querySelector<HTMLButtonElement>('#save-token');
-const clearTokenButton =
-  document.querySelector<HTMLButtonElement>('#clear-token');
+const clearTokenButton = document.querySelector<HTMLButtonElement>('#clear-token');
 const tokenStatus = document.querySelector<HTMLSpanElement>('#token-status');
 const themeToggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
 const themeIcon = document.querySelector<HTMLSpanElement>('#theme-icon');
+const settingsButton = document.querySelector<HTMLButtonElement>('#settings-button');
+
+// Modal Elements
+const settingsModal = document.querySelector<HTMLDivElement>('#settings-modal');
+const resultModal = document.querySelector<HTMLDivElement>('#result-modal');
 
 if (
   !recordButton ||
@@ -36,7 +41,10 @@ if (
   !clearTokenButton ||
   !tokenStatus ||
   !themeToggle ||
-  !themeIcon
+  !themeIcon ||
+  !settingsButton ||
+  !settingsModal ||
+  !resultModal
 ) {
   throw new Error('UI Elemente fehlen im DOM.');
 }
@@ -48,12 +56,47 @@ let isRecording = false;
 let isTranscribing = false;
 let settings: Settings = { language: 'de', preferredMicDeviceId: null, theme: 'system' };
 
-const updateTokenStatus = (hasToken: boolean) => {
-  tokenStatus.textContent = hasToken ? 'Gespeichert' : 'Nicht gesetzt';
-  tokenStatus.classList.toggle('success', hasToken);
+// Modal Management
+const openModal = (modal: HTMLDivElement) => {
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
 };
 
-// Theme management
+const closeModal = (modal: HTMLDivElement) => {
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+// Setup modal close handlers
+const setupModalCloseHandlers = (modal: HTMLDivElement) => {
+  const overlay = modal.querySelector('.modal-overlay');
+  const closeButton = modal.querySelector('.modal-close');
+
+  if (overlay) {
+    overlay.addEventListener('click', () => closeModal(modal));
+  }
+
+  if (closeButton) {
+    closeButton.addEventListener('click', () => closeModal(modal));
+  }
+
+  // ESC key to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal(modal);
+    }
+  });
+};
+
+setupModalCloseHandlers(settingsModal);
+setupModalCloseHandlers(resultModal);
+
+// Settings Button
+settingsButton.addEventListener('click', () => {
+  openModal(settingsModal);
+});
+
+// Theme Management
 const getSystemTheme = (): 'light' | 'dark' => {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
@@ -89,6 +132,17 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
   }
 });
 
+themeToggle.addEventListener('click', () => {
+  cycleTheme();
+});
+
+// Token Status
+const updateTokenStatus = (hasToken: boolean) => {
+  tokenStatus.textContent = hasToken ? 'Gespeichert' : 'Nicht gesetzt';
+  tokenStatus.classList.toggle('success', hasToken);
+};
+
+// Microphone Access
 const primeMicrophoneAccess = async () => {
   if (!navigator.mediaDevices?.getUserMedia) {
     return;
@@ -105,13 +159,27 @@ const primeMicrophoneAccess = async () => {
   }
 };
 
+// Status
 const setStatus = (text: string, isError = false) => {
   statusLine.textContent = text;
   statusLine.dataset.state = isError ? 'error' : 'normal';
 };
 
+// Record Button
 const updateRecordButton = () => {
-  recordButton.textContent = isRecording ? 'Stop' : 'Aufnehmen';
+  const icon = recordButton.querySelector('.record-icon');
+  const text = recordButton.querySelector('.record-text');
+
+  if (icon && text) {
+    if (isRecording) {
+      text.textContent = 'Stop';
+    } else if (isTranscribing) {
+      text.textContent = 'Verarbeitung';
+    } else {
+      text.textContent = 'Aufnehmen';
+    }
+  }
+
   recordButton.disabled = isTranscribing;
   recordButton.dataset.recording = isRecording ? 'true' : 'false';
 };
@@ -137,6 +205,7 @@ const handleError = (error: unknown) => {
   updateRecordButton();
 };
 
+// Device Management
 const refreshDevices = async () => {
   try {
     if (!navigator.mediaDevices?.enumerateDevices) {
@@ -187,6 +256,7 @@ const refreshDevices = async () => {
   }
 };
 
+// Recording
 const startRecording = async () => {
   if (isRecording || isTranscribing) {
     return;
@@ -230,7 +300,7 @@ const startRecording = async () => {
         isRecording = false;
         isTranscribing = true;
         updateRecordButton();
-        setStatus('Transcribing…');
+        setStatus('Wird transkribiert...');
 
         const blob = new Blob(chunks, {
           type: mediaRecorder?.mimeType || 'audio/webm',
@@ -245,7 +315,10 @@ const startRecording = async () => {
         });
 
         transcriptArea.value = transcript || '';
-        setStatus('Idle');
+        setStatus('Bereit zum Aufnehmen');
+
+        // Open result modal
+        openModal(resultModal);
       } catch (error) {
         handleError(error);
       } finally {
@@ -257,7 +330,7 @@ const startRecording = async () => {
     mediaRecorder.start();
     isRecording = true;
     updateRecordButton();
-    setStatus('Recording…');
+    setStatus('Aufnahme läuft...');
   } catch (error) {
     handleError(error);
     stopActiveStream();
@@ -271,6 +344,7 @@ const stopRecording = () => {
   mediaRecorder.stop();
 };
 
+// Event Listeners
 recordButton.addEventListener('click', () => {
   if (isRecording) {
     stopRecording();
@@ -285,13 +359,10 @@ copyButton.addEventListener('click', () => {
     return;
   }
   void window.micscribe.copyText(text);
-  const original = copyButton.textContent;
-  copyButton.textContent = 'Copied';
   copyButton.dataset.copied = 'true';
   setTimeout(() => {
-    copyButton.textContent = original || 'Copy';
     copyButton.dataset.copied = 'false';
-  }, 1200);
+  }, 2000);
 });
 
 saveTokenButton.addEventListener('click', async () => {
@@ -332,17 +403,14 @@ micSelect.addEventListener('change', async () => {
   });
 });
 
-themeToggle.addEventListener('click', () => {
-  cycleTheme();
-});
-
+// Initialization
 const init = async () => {
   try {
     settings = await window.micscribe.getSettings();
     languageSelect.value = settings.language;
     updateTokenStatus(Boolean(settings.hasReplicateToken));
     updateRecordButton();
-    setStatus('Idle');
+    setStatus('Bereit zum Aufnehmen');
 
     // Apply theme
     const theme = settings.theme || 'system';
