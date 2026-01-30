@@ -1,10 +1,12 @@
 export {};
 
 type Language = 'de' | 'en';
+type Theme = 'light' | 'dark' | 'system';
 
 type Settings = {
   language: Language;
   preferredMicDeviceId: string | null;
+  theme?: Theme;
 };
 
 declare global {

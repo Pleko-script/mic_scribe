@@ -10,11 +10,13 @@ declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 type Language = 'de' | 'en';
+type Theme = 'light' | 'dark' | 'system';
 
 type Settings = {
   language: Language;
   preferredMicDeviceId: string | null;
   replicateApiToken: string | null;
+  theme: Theme;
 };
 
 type SettingsStore = {
@@ -27,6 +29,7 @@ const store = new Store<Settings>({
     language: 'de',
     preferredMicDeviceId: null,
     replicateApiToken: null,
+    theme: 'system',
   },
 }) as unknown as SettingsStore;
 
@@ -34,6 +37,7 @@ const getSettings = (): Settings => ({
   language: store.get('language'),
   preferredMicDeviceId: store.get('preferredMicDeviceId'),
   replicateApiToken: store.get('replicateApiToken'),
+  theme: store.get('theme'),
 });
 
 const getPublicSettings = () => {
@@ -42,6 +46,7 @@ const getPublicSettings = () => {
     language: current.language,
     preferredMicDeviceId: current.preferredMicDeviceId,
     hasReplicateToken: Boolean(current.replicateApiToken),
+    theme: current.theme,
   };
 };
 
@@ -51,6 +56,7 @@ const updateSettings = (updates: Partial<Settings>): Settings => {
     language: current.language,
     preferredMicDeviceId: current.preferredMicDeviceId,
     replicateApiToken: current.replicateApiToken,
+    theme: current.theme,
   };
 
   if (updates.language === 'de' || updates.language === 'en') {
@@ -67,6 +73,13 @@ const updateSettings = (updates: Partial<Settings>): Settings => {
     updates.replicateApiToken === null
   ) {
     next.replicateApiToken = updates.replicateApiToken;
+  }
+  if (
+    updates.theme === 'light' ||
+    updates.theme === 'dark' ||
+    updates.theme === 'system'
+  ) {
+    next.theme = updates.theme;
   }
 
   store.set(next);
@@ -176,6 +189,7 @@ ipcMain.handle('settings:set', (_event, updates: Partial<Settings>) => {
     language: next.language,
     preferredMicDeviceId: next.preferredMicDeviceId,
     hasReplicateToken: Boolean(next.replicateApiToken),
+    theme: next.theme,
   };
 });
 

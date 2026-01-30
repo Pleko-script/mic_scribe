@@ -1,11 +1,13 @@
 import './index.css';
 
 type Language = 'de' | 'en';
+type Theme = 'light' | 'dark' | 'system';
 
 type Settings = {
   language: Language;
   preferredMicDeviceId: string | null;
   hasReplicateToken?: boolean;
+  theme?: Theme;
 };
 
 const recordButton = document.querySelector<HTMLButtonElement>('#record-button');
@@ -19,6 +21,8 @@ const saveTokenButton = document.querySelector<HTMLButtonElement>('#save-token')
 const clearTokenButton =
   document.querySelector<HTMLButtonElement>('#clear-token');
 const tokenStatus = document.querySelector<HTMLSpanElement>('#token-status');
+const themeToggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
+const themeIcon = document.querySelector<HTMLSpanElement>('#theme-icon');
 
 if (
   !recordButton ||
@@ -30,7 +34,9 @@ if (
   !apiTokenInput ||
   !saveTokenButton ||
   !clearTokenButton ||
-  !tokenStatus
+  !tokenStatus ||
+  !themeToggle ||
+  !themeIcon
 ) {
   throw new Error('UI Elemente fehlen im DOM.');
 }
@@ -40,12 +46,48 @@ let mediaRecorder: MediaRecorder | null = null;
 let chunks: Blob[] = [];
 let isRecording = false;
 let isTranscribing = false;
-let settings: Settings = { language: 'de', preferredMicDeviceId: null };
+let settings: Settings = { language: 'de', preferredMicDeviceId: null, theme: 'system' };
 
 const updateTokenStatus = (hasToken: boolean) => {
   tokenStatus.textContent = hasToken ? 'Gespeichert' : 'Nicht gesetzt';
   tokenStatus.classList.toggle('success', hasToken);
 };
+
+// Theme management
+const getSystemTheme = (): 'light' | 'dark' => {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
+const getEffectiveTheme = (theme: Theme): 'light' | 'dark' => {
+  return theme === 'system' ? getSystemTheme() : theme;
+};
+
+const applyTheme = (theme: 'light' | 'dark') => {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+};
+
+const updateTheme = async (theme: Theme) => {
+  const effectiveTheme = getEffectiveTheme(theme);
+  applyTheme(effectiveTheme);
+  settings = await window.micscribe.setSettings({ theme });
+};
+
+const cycleTheme = async () => {
+  const currentTheme = settings.theme || 'light';
+  const nextTheme: Theme =
+    currentTheme === 'light' ? 'dark' :
+    currentTheme === 'dark' ? 'system' :
+    'light';
+  await updateTheme(nextTheme);
+};
+
+// System theme change listener
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+  if (settings.theme === 'system') {
+    applyTheme(e.matches ? 'dark' : 'light');
+  }
+});
 
 const primeMicrophoneAccess = async () => {
   if (!navigator.mediaDevices?.getUserMedia) {
@@ -287,6 +329,10 @@ micSelect.addEventListener('change', async () => {
   });
 });
 
+themeToggle.addEventListener('click', () => {
+  cycleTheme();
+});
+
 const init = async () => {
   try {
     settings = await window.micscribe.getSettings();
@@ -294,6 +340,13 @@ const init = async () => {
     updateTokenStatus(Boolean(settings.hasReplicateToken));
     updateRecordButton();
     setStatus('Idle');
+
+    // Apply theme
+    const theme = settings.theme || 'system';
+    const effectiveTheme = getEffectiveTheme(theme);
+    applyTheme(effectiveTheme);
+    settings.theme = theme;
+
     await primeMicrophoneAccess();
     await refreshDevices();
   } catch (error) {

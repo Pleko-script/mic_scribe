@@ -1,10 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 type Language = 'de' | 'en';
+type Theme = 'light' | 'dark' | 'system';
 
 type Settings = {
   language: Language;
   preferredMicDeviceId: string | null;
+  theme?: Theme;
 };
 
 contextBridge.exposeInMainWorld('micscribe', {
