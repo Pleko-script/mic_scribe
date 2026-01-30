@@ -136,12 +136,10 @@ const updateTheme = async (theme: Theme) => {
   settings = await window.micscribe.setSettings({ theme });
 };
 
-const cycleTheme = async () => {
-  const currentTheme = settings.theme || 'light';
-  const nextTheme: Theme =
-    currentTheme === 'light' ? 'dark' :
-    currentTheme === 'dark' ? 'system' :
-    'light';
+const toggleTheme = async () => {
+  const currentTheme = settings.theme || 'system';
+  const effectiveTheme = getEffectiveTheme(currentTheme);
+  const nextTheme: Theme = effectiveTheme === 'dark' ? 'light' : 'dark';
   await updateTheme(nextTheme);
 };
 
@@ -153,7 +151,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
 });
 
 themeToggle.addEventListener('click', () => {
-  cycleTheme();
+  toggleTheme();
 });
 
 // Token Status
