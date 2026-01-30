@@ -167,9 +167,8 @@ ipcMain.handle(
 
     try {
       const replicate = await ensureReplicateClient();
-      const file = await replicate.files.create({
-        content: fs.createReadStream(tempPath),
-      });
+      const audioBuffer = await fs.promises.readFile(tempPath);
+      const file = await replicate.files.create(audioBuffer);
       const output = await replicate.run('openai/gpt-4o-transcribe', {
         input: {
           audio_file: file,
