@@ -4,10 +4,11 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+      content="default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data:;"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MicScribe</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
     <!-- Fixed Buttons -->
@@ -18,7 +19,7 @@
       aria-label="Einstellungen"
       title="Einstellungen"
     >
-      <span class="icon">⚙️</span>
+      <i data-lucide="settings"></i>
     </button>
 
     <button
@@ -28,14 +29,25 @@
       aria-label="Theme umschalten"
       title="Theme umschalten (hell/dunkel)"
     >
-      <span class="theme-toggle-icon" id="theme-icon">🌙</span>
+      <i data-lucide="moon" id="theme-icon"></i>
+    </button>
+
+    <button
+      id="show-result-button"
+      class="floating-button show-result-button"
+      type="button"
+      aria-label="Letztes Transkript anzeigen"
+      title="Letztes Transkript anzeigen"
+      style="display: none;"
+    >
+      <i data-lucide="file-text"></i>
     </button>
 
     <!-- Main Screen - Centered Recording -->
     <main class="main-screen">
       <div class="record-container">
         <button id="record-button" class="record-button">
-          <span class="record-icon">🎙️</span>
+          <i data-lucide="mic" class="record-icon"></i>
           <span class="record-text">Aufnehmen</span>
         </button>
         <p id="status-line" class="status">Bereit zum Aufnehmen</p>
@@ -48,7 +60,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2>Einstellungen</h2>
-          <button class="modal-close" aria-label="Schließen">×</button>
+          <button class="modal-close" aria-label="Schließen">
+            <i data-lucide="x"></i>
+          </button>
         </div>
 
         <div class="modal-body">
@@ -92,7 +106,9 @@
       <div class="modal-content result-modal-content">
         <div class="modal-header">
           <h2>Transkript</h2>
-          <button class="modal-close" aria-label="Schließen">×</button>
+          <button class="modal-close" aria-label="Schließen">
+            <i data-lucide="x"></i>
+          </button>
         </div>
 
         <div class="modal-body">
@@ -102,10 +118,16 @@
             placeholder="Hier erscheint das Transkript..."
           ></textarea>
 
-          <button id="copy-button" class="btn-copy">
-            <span class="copy-icon">📋</span>
-            <span class="copy-text">Text kopieren</span>
-          </button>
+          <div class="modal-actions">
+            <button id="copy-button" class="btn-copy">
+              <i data-lucide="copy" class="copy-icon"></i>
+              <span class="copy-text">Kopieren</span>
+            </button>
+            <button id="record-again-button" class="btn-record-again">
+              <i data-lucide="mic"></i>
+              <span>Erneut aufnehmen</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

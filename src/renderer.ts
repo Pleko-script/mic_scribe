@@ -22,8 +22,10 @@ const saveTokenButton = document.querySelector<HTMLButtonElement>('#save-token')
 const clearTokenButton = document.querySelector<HTMLButtonElement>('#clear-token');
 const tokenStatus = document.querySelector<HTMLSpanElement>('#token-status');
 const themeToggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
-const themeIcon = document.querySelector<HTMLSpanElement>('#theme-icon');
+const themeIcon = document.querySelector<HTMLElement>('#theme-icon');
 const settingsButton = document.querySelector<HTMLButtonElement>('#settings-button');
+const showResultButton = document.querySelector<HTMLButtonElement>('#show-result-button');
+const recordAgainButton = document.querySelector<HTMLButtonElement>('#record-again-button');
 
 // Modal Elements
 const settingsModal = document.querySelector<HTMLDivElement>('#settings-modal');
@@ -44,7 +46,9 @@ if (
   !themeIcon ||
   !settingsButton ||
   !settingsModal ||
-  !resultModal
+  !resultModal ||
+  !showResultButton ||
+  !recordAgainButton
 ) {
   throw new Error('UI Elemente fehlen im DOM.');
 }
@@ -96,6 +100,16 @@ settingsButton.addEventListener('click', () => {
   openModal(settingsModal);
 });
 
+showResultButton.addEventListener('click', () => {
+  openModal(resultModal);
+});
+
+recordAgainButton.addEventListener('click', () => {
+  closeModal(resultModal);
+  // Start recording immediately
+  startRecording();
+});
+
 // Theme Management
 const getSystemTheme = (): 'light' | 'dark' => {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -107,7 +121,11 @@ const getEffectiveTheme = (theme: Theme): 'light' | 'dark' => {
 
 const applyTheme = (theme: 'light' | 'dark') => {
   document.documentElement.setAttribute('data-theme', theme);
-  themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+  // Re-create the icon
+  if (typeof (window as any).lucide !== 'undefined') {
+    (window as any).lucide.createIcons();
+  }
 };
 
 const updateTheme = async (theme: Theme) => {
@@ -319,6 +337,8 @@ const startRecording = async () => {
 
         // Open result modal
         openModal(resultModal);
+        // Show the result button for later access
+        showResultButton.style.display = 'flex';
       } catch (error) {
         handleError(error);
       } finally {
@@ -360,9 +380,14 @@ copyButton.addEventListener('click', () => {
   }
   void window.micscribe.copyText(text);
   copyButton.dataset.copied = 'true';
+
+  // Close modal after short delay
   setTimeout(() => {
     copyButton.dataset.copied = 'false';
-  }, 2000);
+    closeModal(resultModal);
+    // Show the result button so user can reopen if needed
+    showResultButton.style.display = 'flex';
+  }, 500);
 });
 
 saveTokenButton.addEventListener('click', async () => {
@@ -429,6 +454,11 @@ if (navigator.mediaDevices?.addEventListener) {
   navigator.mediaDevices.addEventListener('devicechange', () => {
     refreshDevices();
   });
+}
+
+// Initialize Lucide icons
+if (typeof (window as any).lucide !== 'undefined') {
+  (window as any).lucide.createIcons();
 }
 
 init();

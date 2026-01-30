@@ -2,54 +2,54 @@
 
 :root {
   color-scheme: light;
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f5f5f7;
+  --foreground: #1d1d1f;
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --primary: #111827;
-  --primary-foreground: #f8fafc;
-  --accent: #3b82f6;
+  --card-foreground: #1d1d1f;
+  --muted: #f5f5f7;
+  --muted-foreground: #86868b;
+  --border: #d2d2d7;
+  --input: #e8e8ed;
+  --primary: #1d1d1f;
+  --primary-foreground: #ffffff;
+  --accent: #86868b;
   --accent-foreground: #ffffff;
-  --success: #10b981;
-  --success-bg: #dcfce7;
-  --success-fg: #166534;
-  --success-border: #bbf7d0;
-  --error-fg: #ef4444;
-  --ring: rgba(15, 23, 42, 0.2);
+  --success: #34c759;
+  --success-bg: #e8f5e9;
+  --success-fg: #1e8e3e;
+  --success-border: #a5d6a7;
+  --error-fg: #ff3b30;
+  --ring: rgba(0, 0, 0, 0.1);
   --radius: 16px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --background: #0f172a;
-  --foreground: #e2e8f0;
-  --card: #1e293b;
-  --card-foreground: #e2e8f0;
-  --muted: #334155;
-  --muted-foreground: #94a3b8;
-  --border: #334155;
-  --input: #475569;
-  --primary: #f8fafc;
-  --primary-foreground: #0f172a;
-  --accent: #60a5fa;
-  --success: #34d399;
-  --success-bg: #064e3b;
-  --success-fg: #6ee7b7;
-  --success-border: #065f46;
-  --error-fg: #f87171;
-  --ring: rgba(148, 163, 184, 0.3);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --card: #1c1c1e;
+  --card-foreground: #f5f5f7;
+  --muted: #2c2c2e;
+  --muted-foreground: #98989d;
+  --border: #38383a;
+  --input: #3a3a3c;
+  --primary: #f5f5f7;
+  --primary-foreground: #000000;
+  --accent: #98989d;
+  --success: #32d74b;
+  --success-bg: #1c3326;
+  --success-fg: #32d74b;
+  --success-border: #2d5a3d;
+  --error-fg: #ff453a;
+  --ring: rgba(255, 255, 255, 0.15);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.8);
 }
 
 * {
@@ -84,9 +84,15 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 22px;
   z-index: 1000;
   box-shadow: var(--shadow-lg);
+  color: var(--foreground);
+}
+
+.floating-button svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
 }
 
 .floating-button:hover {
@@ -106,6 +112,11 @@ body {
 .theme-toggle {
   top: 20px;
   right: 20px;
+}
+
+.show-result-button {
+  top: 20px;
+  right: 80px;
 }
 
 .theme-toggle-icon {
@@ -189,9 +200,14 @@ body {
 }
 
 .record-icon {
-  font-size: 64px;
   line-height: 1;
   transition: transform 0.3s ease;
+}
+
+.record-icon svg {
+  width: 64px;
+  height: 64px;
+  stroke-width: 2;
 }
 
 .record-button:hover:not(:disabled) .record-icon {
@@ -341,13 +357,19 @@ body {
   background: transparent;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 28px;
   line-height: 1;
   color: var(--muted-foreground);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+}
+
+.modal-close svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
 }
 
 .modal-close:hover {
@@ -489,29 +511,36 @@ input[type="password"]:focus {
   background: var(--muted);
 }
 
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 /* Copy Button */
 .btn-copy {
-  width: 100%;
-  padding: 16px 24px;
-  background: var(--accent);
-  color: var(--accent-foreground);
+  flex: 1;
+  padding: 14px 20px;
+  background: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-md);
-  margin-top: 16px;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-copy:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  opacity: 0.9;
 }
 
 .btn-copy:active {
@@ -522,24 +551,43 @@ input[type="password"]:focus {
   background: var(--success);
 }
 
-.btn-copy[data-copied="true"] .copy-text::after {
-  content: ' ✓';
-  animation: check-in 0.3s ease;
+.btn-copy svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
 }
 
-@keyframes check-in {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Record Again Button */
+.btn-record-again {
+  flex: 1;
+  padding: 14px 20px;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
 }
 
-.copy-icon {
-  font-size: 24px;
+.btn-record-again:hover {
+  background: var(--muted);
+  transform: translateY(-1px);
+}
+
+.btn-record-again:active {
+  transform: scale(0.98);
+}
+
+.btn-record-again svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
 }
 
 /* Textarea */
