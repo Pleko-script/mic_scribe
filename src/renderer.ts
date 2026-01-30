@@ -1,4 +1,5 @@
 import './index.css';
+import { createIcons, icons } from 'lucide';
 
 type Language = 'de' | 'en';
 type Theme = 'light' | 'dark' | 'system';
@@ -22,7 +23,7 @@ const saveTokenButton = document.querySelector<HTMLButtonElement>('#save-token')
 const clearTokenButton = document.querySelector<HTMLButtonElement>('#clear-token');
 const tokenStatus = document.querySelector<HTMLSpanElement>('#token-status');
 const themeToggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
-const themeIcon = document.querySelector<HTMLElement>('#theme-icon');
+const getThemeIcon = () => document.querySelector<HTMLElement>('#theme-icon');
 const settingsButton = document.querySelector<HTMLButtonElement>('#settings-button');
 const showResultButton = document.querySelector<HTMLButtonElement>('#show-result-button');
 const recordAgainButton = document.querySelector<HTMLButtonElement>('#record-again-button');
@@ -43,7 +44,7 @@ if (
   !clearTokenButton ||
   !tokenStatus ||
   !themeToggle ||
-  !themeIcon ||
+  !getThemeIcon() ||
   !settingsButton ||
   !settingsModal ||
   !resultModal ||
@@ -121,11 +122,12 @@ const getEffectiveTheme = (theme: Theme): 'light' | 'dark' => {
 
 const applyTheme = (theme: 'light' | 'dark') => {
   document.documentElement.setAttribute('data-theme', theme);
-  themeIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-  // Re-create the icon
-  if (typeof (window as any).lucide !== 'undefined') {
-    (window as any).lucide.createIcons();
+  const themeIcon = getThemeIcon();
+  if (themeIcon) {
+    themeIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
   }
+  // Re-create the icon
+  createIcons({ icons });
 };
 
 const updateTheme = async (theme: Theme) => {
@@ -457,8 +459,6 @@ if (navigator.mediaDevices?.addEventListener) {
 }
 
 // Initialize Lucide icons
-if (typeof (window as any).lucide !== 'undefined') {
-  (window as any).lucide.createIcons();
-}
+createIcons({ icons });
 
 init();
