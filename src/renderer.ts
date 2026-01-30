@@ -226,7 +226,7 @@ copyButton.addEventListener('click', () => {
   if (!text) {
     return;
   }
-  window.micscribe.copyText(text);
+  void window.micscribe.copyText(text);
   const original = copyButton.textContent;
   copyButton.textContent = 'Copied';
   setTimeout(() => {

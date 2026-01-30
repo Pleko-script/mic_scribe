@@ -17,7 +17,7 @@ declare global {
         mimeType?: string;
         language: Language;
       }) => Promise<string>;
-      copyText: (text: string) => void;
+      copyText: (text: string) => Promise<void>;
     };
   }
 }

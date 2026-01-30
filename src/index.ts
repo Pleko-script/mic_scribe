@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, clipboard } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs';
 import { randomUUID } from 'node:crypto';
@@ -56,11 +56,11 @@ const updateSettings = (updates: Partial<Settings>): Settings => {
 
 type ReplicateClient = {
   files: {
-    create: (args: { content: NodeJS.ReadableStream }) => Promise<unknown>;
+    create: (file: Buffer | Blob) => Promise<{ urls: { get: string } }>;
   };
   run: (
     model: string,
-    args: { input: { audio_file: unknown; language: Language } },
+    args: { input: { audio_file: string; language: Language } },
   ) => Promise<unknown>;
 };
 
@@ -171,7 +171,7 @@ ipcMain.handle(
       const file = await replicate.files.create(audioBuffer);
       const output = await replicate.run('openai/gpt-4o-transcribe', {
         input: {
-          audio_file: file,
+          audio_file: file.urls.get,
           language,
         },
       });
@@ -184,6 +184,10 @@ ipcMain.handle(
     }
   },
 );
+
+ipcMain.handle('clipboard:write', (_event, text: string) => {
+  clipboard.writeText(text ?? '');
+});
 
 app.whenReady().then(createWindow);
 

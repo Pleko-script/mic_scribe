@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, clipboard } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
 type Language = 'de' | 'en';
 
@@ -16,5 +16,6 @@ contextBridge.exposeInMainWorld('micscribe', {
     mimeType?: string;
     language: Language;
   }): Promise<string> => ipcRenderer.invoke('transcribe-audio', payload),
-  copyText: (text: string): void => clipboard.writeText(text ?? ''),
+  copyText: (text: string): Promise<void> =>
+    ipcRenderer.invoke('clipboard:write', text ?? ''),
 });
