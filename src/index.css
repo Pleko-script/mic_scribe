@@ -66,20 +66,20 @@ body::after {
   position: relative;
   max-width: 980px;
   margin: 0 auto;
-  padding: 36px 28px 46px;
+  padding: 22px 22px 28px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 16px;
 }
 
 .toolbar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  gap: 14px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
-  padding: 18px;
+  padding: 14px;
   box-shadow: var(--shadow-soft);
 }
 
@@ -98,9 +98,9 @@ body::after {
 
 select {
   border: 1px solid var(--input);
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: var(--radius);
-  font-size: 15px;
+  font-size: 14px;
   background: var(--card);
   color: var(--foreground);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -120,11 +120,11 @@ select:disabled {
   background: var(--card);
   border-radius: calc(var(--radius) + 2px);
   border: 1px solid var(--border);
-  padding: 18px;
+  padding: 14px;
   box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .api-header {
@@ -165,15 +165,15 @@ select:disabled {
 .api-actions {
   display: grid;
   grid-template-columns: 1fr auto auto;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
 .api-actions input {
   border: 1px solid var(--input);
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: var(--radius);
-  font-size: 15px;
+  font-size: 14px;
   background: var(--card);
   color: var(--foreground);
 }
@@ -188,7 +188,7 @@ select:disabled {
 .result-header button {
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 10px 18px;
+  padding: 8px 14px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -215,18 +215,18 @@ select:disabled {
 .controls {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 14px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
-  padding: 20px;
+  padding: 14px;
   box-shadow: var(--shadow-soft);
 }
 
 .record {
   flex: 0 0 auto;
-  padding: 16px 40px;
-  font-size: 18px;
+  padding: 12px 28px;
+  font-size: 16px;
   font-weight: 600;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -249,7 +249,7 @@ select:disabled {
 }
 
 .status {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted-foreground);
 }
 
@@ -261,12 +261,12 @@ select:disabled {
 .result {
   background: var(--card);
   border-radius: calc(var(--radius) + 6px);
-  padding: 20px;
+  padding: 16px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .result-header {
@@ -299,12 +299,12 @@ select:disabled {
 
 textarea {
   width: 100%;
-  min-height: 260px;
+  min-height: 180px;
   resize: vertical;
   border: 1px solid var(--input);
   border-radius: var(--radius);
-  padding: 16px;
-  font-size: 15px;
+  padding: 12px;
+  font-size: 14px;
   line-height: 1.5;
   font-family: 'Segoe UI Variable', 'Segoe UI', 'Tahoma', sans-serif;
   color: var(--foreground);
