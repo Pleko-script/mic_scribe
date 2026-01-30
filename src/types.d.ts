@@ -1,0 +1,23 @@
+export {};
+
+type Language = 'de' | 'en';
+
+type Settings = {
+  language: Language;
+  preferredMicDeviceId: string | null;
+};
+
+declare global {
+  interface Window {
+    micscribe: {
+      getSettings: () => Promise<Settings>;
+      setSettings: (updates: Partial<Settings>) => Promise<Settings>;
+      transcribeAudio: (payload: {
+        audioBuffer: ArrayBuffer;
+        mimeType?: string;
+        language: Language;
+      }) => Promise<string>;
+      copyText: (text: string) => void;
+    };
+  }
+}

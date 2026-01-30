@@ -1,12 +1,46 @@
 <!doctype html>
-<html>
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
-
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MicScribe</title>
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
+    <main class="app">
+      <header class="toolbar">
+        <div class="field">
+          <label for="language">Sprache</label>
+          <select id="language">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="microphone">Mikrofon</label>
+          <select id="microphone"></select>
+        </div>
+      </header>
+
+      <section class="controls">
+        <button id="record-button" class="record">Aufnehmen</button>
+        <p id="status-line" class="status">Idle</p>
+      </section>
+
+      <section class="result">
+        <div class="result-header">
+          <h2>Transkript</h2>
+          <button id="copy-button" class="copy">Copy</button>
+        </div>
+        <textarea
+          id="transcript"
+          readonly
+          placeholder="Hier erscheint das Transkript..."
+        ></textarea>
+      </section>
+    </main>
   </body>
 </html>
