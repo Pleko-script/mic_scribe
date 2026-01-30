@@ -14,6 +14,7 @@ type Language = 'de' | 'en';
 type Settings = {
   language: Language;
   preferredMicDeviceId: string | null;
+  replicateApiToken: string | null;
 };
 
 type SettingsStore = {
@@ -25,19 +26,31 @@ const store = new Store<Settings>({
   defaults: {
     language: 'de',
     preferredMicDeviceId: null,
+    replicateApiToken: null,
   },
 }) as unknown as SettingsStore;
 
 const getSettings = (): Settings => ({
   language: store.get('language'),
   preferredMicDeviceId: store.get('preferredMicDeviceId'),
+  replicateApiToken: store.get('replicateApiToken'),
 });
+
+const getPublicSettings = () => {
+  const current = getSettings();
+  return {
+    language: current.language,
+    preferredMicDeviceId: current.preferredMicDeviceId,
+    hasReplicateToken: Boolean(current.replicateApiToken),
+  };
+};
 
 const updateSettings = (updates: Partial<Settings>): Settings => {
   const current = getSettings();
   const next: Settings = {
     language: current.language,
     preferredMicDeviceId: current.preferredMicDeviceId,
+    replicateApiToken: current.replicateApiToken,
   };
 
   if (updates.language === 'de' || updates.language === 'en') {
@@ -48,6 +61,12 @@ const updateSettings = (updates: Partial<Settings>): Settings => {
     updates.preferredMicDeviceId === null
   ) {
     next.preferredMicDeviceId = updates.preferredMicDeviceId;
+  }
+  if (
+    typeof updates.replicateApiToken === 'string' ||
+    updates.replicateApiToken === null
+  ) {
+    next.replicateApiToken = updates.replicateApiToken;
   }
 
   store.set(next);
@@ -65,18 +84,21 @@ type ReplicateClient = {
 };
 
 let replicateClient: ReplicateClient | null = null;
+let replicateToken: string | null = null;
 
 const ensureReplicateClient = async () => {
-  const token = process.env.REPLICATE_API_TOKEN;
+  const token =
+    process.env.REPLICATE_API_TOKEN || store.get('replicateApiToken');
   if (!token) {
     throw new Error(
-      'REPLICATE_API_TOKEN ist nicht gesetzt. Bitte als Environment-Variable setzen.',
+      'REPLICATE_API_TOKEN ist nicht gesetzt. Bitte als Environment-Variable setzen oder im UI speichern.',
     );
   }
 
-  if (!replicateClient) {
+  if (!replicateClient || replicateToken !== token) {
     const mod = await import('replicate');
     replicateClient = new mod.default({ auth: token }) as unknown as ReplicateClient;
+    replicateToken = token;
   }
   return replicateClient;
 };
@@ -135,10 +157,15 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 };
 
-ipcMain.handle('settings:get', () => getSettings());
+ipcMain.handle('settings:get', () => getPublicSettings());
 
 ipcMain.handle('settings:set', (_event, updates: Partial<Settings>) => {
-  return updateSettings(updates);
+  const next = updateSettings(updates);
+  return {
+    language: next.language,
+    preferredMicDeviceId: next.preferredMicDeviceId,
+    hasReplicateToken: Boolean(next.replicateApiToken),
+  };
 });
 
 ipcMain.handle(
@@ -187,6 +214,20 @@ ipcMain.handle(
 
 ipcMain.handle('clipboard:write', (_event, text: string) => {
   clipboard.writeText(text ?? '');
+});
+
+ipcMain.handle('replicate:set-token', (_event, token: string) => {
+  const value = token?.trim();
+  if (!value) {
+    return { hasReplicateToken: Boolean(store.get('replicateApiToken')) };
+  }
+  const next = updateSettings({ replicateApiToken: value });
+  return { hasReplicateToken: Boolean(next.replicateApiToken) };
+});
+
+ipcMain.handle('replicate:clear-token', () => {
+  const next = updateSettings({ replicateApiToken: null });
+  return { hasReplicateToken: Boolean(next.replicateApiToken) };
 });
 
 app.whenReady().then(createWindow);

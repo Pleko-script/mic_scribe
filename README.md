@@ -24,8 +24,9 @@ Then edit `.env` and set your Replicate token:
 REPLICATE_API_TOKEN=your-token
 ```
 
-If you build/install the app, prefer setting the environment variable at the
-system/user level instead of shipping a `.env` file.
+If you build/install the app, you can also set the token directly in the UI
+(`Replicate API-Key`). The value is stored locally and is not shown after save.
+Alternatively, set the environment variable at the system/user level.
 
 PowerShell (current session):
 

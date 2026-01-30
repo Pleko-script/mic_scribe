@@ -5,6 +5,7 @@ type Language = 'de' | 'en';
 type Settings = {
   language: Language;
   preferredMicDeviceId: string | null;
+  hasReplicateToken?: boolean;
 };
 
 const recordButton = document.querySelector<HTMLButtonElement>('#record-button');
@@ -13,6 +14,11 @@ const transcriptArea = document.querySelector<HTMLTextAreaElement>('#transcript'
 const copyButton = document.querySelector<HTMLButtonElement>('#copy-button');
 const languageSelect = document.querySelector<HTMLSelectElement>('#language');
 const micSelect = document.querySelector<HTMLSelectElement>('#microphone');
+const apiTokenInput = document.querySelector<HTMLInputElement>('#api-token');
+const saveTokenButton = document.querySelector<HTMLButtonElement>('#save-token');
+const clearTokenButton =
+  document.querySelector<HTMLButtonElement>('#clear-token');
+const tokenStatus = document.querySelector<HTMLSpanElement>('#token-status');
 
 if (
   !recordButton ||
@@ -20,7 +26,11 @@ if (
   !transcriptArea ||
   !copyButton ||
   !languageSelect ||
-  !micSelect
+  !micSelect ||
+  !apiTokenInput ||
+  !saveTokenButton ||
+  !clearTokenButton ||
+  !tokenStatus
 ) {
   throw new Error('UI Elemente fehlen im DOM.');
 }
@@ -31,6 +41,11 @@ let chunks: Blob[] = [];
 let isRecording = false;
 let isTranscribing = false;
 let settings: Settings = { language: 'de', preferredMicDeviceId: null };
+
+const updateTokenStatus = (hasToken: boolean) => {
+  tokenStatus.textContent = hasToken ? 'Gespeichert' : 'Nicht gesetzt';
+  tokenStatus.classList.toggle('success', hasToken);
+};
 
 const primeMicrophoneAccess = async () => {
   if (!navigator.mediaDevices?.getUserMedia) {
@@ -234,6 +249,32 @@ copyButton.addEventListener('click', () => {
   }, 1200);
 });
 
+saveTokenButton.addEventListener('click', async () => {
+  const token = apiTokenInput.value.trim();
+  if (!token) {
+    setStatus('Error: Bitte API-Key eingeben.', true);
+    return;
+  }
+  try {
+    const result = await window.micscribe.setReplicateToken(token);
+    apiTokenInput.value = '';
+    updateTokenStatus(result.hasReplicateToken);
+    setStatus('API-Key gespeichert.');
+  } catch (error) {
+    handleError(error);
+  }
+});
+
+clearTokenButton.addEventListener('click', async () => {
+  try {
+    const result = await window.micscribe.clearReplicateToken();
+    updateTokenStatus(result.hasReplicateToken);
+    setStatus('API-Key entfernt.');
+  } catch (error) {
+    handleError(error);
+  }
+});
+
 languageSelect.addEventListener('change', async () => {
   const value = languageSelect.value as Language;
   settings = await window.micscribe.setSettings({ language: value });
@@ -250,6 +291,7 @@ const init = async () => {
   try {
     settings = await window.micscribe.getSettings();
     languageSelect.value = settings.language;
+    updateTokenStatus(Boolean(settings.hasReplicateToken));
     updateRecordButton();
     setStatus('Idle');
     await primeMicrophoneAccess();
