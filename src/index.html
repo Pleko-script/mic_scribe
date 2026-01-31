@@ -45,10 +45,21 @@
     <!-- Main Screen - Centered Recording -->
     <main class="main-screen">
       <div class="record-container">
-        <button id="record-button" class="record-button">
-          <i data-lucide="mic" class="record-icon"></i>
-          <span class="record-text">Aufnehmen</span>
-        </button>
+        <div class="record-actions">
+          <button id="record-button" class="record-button">
+            <i data-lucide="mic" class="record-icon"></i>
+            <span class="record-text">Aufnehmen</span>
+          </button>
+          <button
+            id="cancel-record-button"
+            class="cancel-record-button"
+            type="button"
+            aria-label="Aufnahme verwerfen"
+            title="Aufnahme verwerfen"
+          >
+            <i data-lucide="x"></i>
+          </button>
+        </div>
         <p id="status-line" class="status">Bereit zum Aufnehmen</p>
       </div>
     </main>
@@ -130,5 +141,6 @@
         </div>
       </div>
     </div>
+
   </body>
 </html>

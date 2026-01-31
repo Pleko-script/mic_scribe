@@ -27,6 +27,7 @@ const getThemeIcon = () => document.querySelector<HTMLElement>('#theme-icon');
 const settingsButton = document.querySelector<HTMLButtonElement>('#settings-button');
 const showResultButton = document.querySelector<HTMLButtonElement>('#show-result-button');
 const recordAgainButton = document.querySelector<HTMLButtonElement>('#record-again-button');
+const cancelRecordButton = document.querySelector<HTMLButtonElement>('#cancel-record-button');
 
 // Modal Elements
 const settingsModal = document.querySelector<HTMLDivElement>('#settings-modal');
@@ -49,7 +50,8 @@ if (
   !settingsModal ||
   !resultModal ||
   !showResultButton ||
-  !recordAgainButton
+  !recordAgainButton ||
+  !cancelRecordButton
 ) {
   throw new Error('UI Elemente fehlen im DOM.');
 }
@@ -59,6 +61,7 @@ let mediaRecorder: MediaRecorder | null = null;
 let chunks: Blob[] = [];
 let isRecording = false;
 let isTranscribing = false;
+let discardOnStop = false;
 let settings: Settings = { language: 'de', preferredMicDeviceId: null, theme: 'system' };
 
 // Modal Management
@@ -109,6 +112,14 @@ recordAgainButton.addEventListener('click', () => {
   closeModal(resultModal);
   // Start recording immediately
   startRecording();
+});
+
+cancelRecordButton.addEventListener('click', () => {
+  if (!isRecording) {
+    return;
+  }
+  discardOnStop = true;
+  stopRecording();
 });
 
 // Theme Management
@@ -200,6 +211,8 @@ const updateRecordButton = () => {
 
   recordButton.disabled = isTranscribing;
   recordButton.dataset.recording = isRecording ? 'true' : 'false';
+  cancelRecordButton.style.display = isRecording ? 'inline-flex' : 'none';
+  cancelRecordButton.disabled = !isRecording || isTranscribing;
 };
 
 const getPreferredMimeType = (): string | undefined => {
@@ -280,6 +293,8 @@ const startRecording = async () => {
     return;
   }
 
+  discardOnStop = false;
+
   if (!navigator.mediaDevices?.getUserMedia) {
     handleError(new Error('Audioaufnahme wird nicht unterstützt.'));
     return;
@@ -316,6 +331,12 @@ const startRecording = async () => {
       try {
         stopActiveStream();
         isRecording = false;
+        if (discardOnStop) {
+          discardOnStop = false;
+          setStatus('Aufnahme verworfen.');
+          updateRecordButton();
+          return;
+        }
         isTranscribing = true;
         updateRecordButton();
         setStatus('Wird transkribiert...');
@@ -460,3 +481,8 @@ if (navigator.mediaDevices?.addEventListener) {
 createIcons({ icons });
 
 init();
+
+
+
+
+

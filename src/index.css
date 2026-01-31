@@ -144,6 +144,12 @@ body {
   animation: fade-in 0.6s ease;
 }
 
+.record-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -173,6 +179,38 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
+}
+
+.cancel-record-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.cancel-record-button svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.5;
+}
+
+.cancel-record-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--error-fg);
+  color: var(--error-fg);
+}
+
+.cancel-record-button:active {
+  transform: scale(0.96);
 }
 
 .record-button::before {
@@ -622,6 +660,20 @@ textarea:focus {
   .record-button {
     width: 160px;
     height: 160px;
+  }
+
+  .record-actions {
+    gap: 12px;
+  }
+
+  .cancel-record-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .cancel-record-button svg {
+    width: 18px;
+    height: 18px;
   }
 
   .record-icon {
